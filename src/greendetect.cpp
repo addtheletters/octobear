@@ -1,3 +1,9 @@
+/*
+ * Framing credit to Shermal Fernando
+ * http://opencv-srf.blogspot.com/2010/09/object-detection-using-color-seperation.html
+ *
+ */
+
 #include <iostream>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -5,7 +11,7 @@
 using namespace cv;
 using namespace std;
 
-int main(int argc, char** argv) {
+int main_gdt(int argc, char** argv) {
 	VideoCapture cap(0); //capture the video from web cam
 	VideoCapture cap1(1);
 	VideoCapture cap2(2);
