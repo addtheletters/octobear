@@ -7,11 +7,20 @@ using namespace std;
 
 int main(int argc, char** argv) {
 	VideoCapture cap(0); //capture the video from web cam
+	VideoCapture cap1(1);
+	VideoCapture cap2(2);
 
 	if (!cap.isOpened())  // if not success, exit program
 	{
 		cout << "Cannot open the web cam" << endl;
-		return -1;
+	}
+	if (!cap1.isOpened())  // if not success, exit program
+	{
+		cout << "Cannot open the web cam (1)" << endl;
+	}
+	if (!cap2.isOpened())  // if not success, exit program
+	{
+		cout << "Cannot open the web cam (2)" << endl;
 	}
 
 	namedWindow("Control", CV_WINDOW_AUTOSIZE); //create a window called "Control"
@@ -67,14 +76,37 @@ int main(int argc, char** argv) {
 		erode(imgThresholded, imgThresholded,
 				getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
 
-		Mat imgReflected;
-		cv::flip(imgOriginal, imgReflected, 1);
+		Mat imgcam1;
+		Mat imgcam2;
 
+		bool b1Success = cap1.read(imgcam1); // read a new frame from video
 
-		imshow("Thresholded Image", imgThresholded); //show the thresholded image
-		imshow("Original", imgOriginal); //show the original image
-		imshow("Reflected", imgReflected); //show the reflected image
+		if (!b1Success) //if not success, break loop
+		{
+			cout << "Cannot read a frame from video stream (1)" << endl;
+			//break;
+		}
 
+		bool b2Success = cap2.read(imgcam2); // read a new frame from video
+
+		if (!b2Success) //if not success, break loop
+		{
+			cout << "Cannot read a frame from video stream (2)" << endl;
+			//break;
+		}
+
+		if (bSuccess) {
+			imshow("Thresholded Image (0)", imgThresholded); //show the thresholded image
+			imshow("Original (0)", imgOriginal); //show the original image
+		}
+		if (b1Success) {
+			Mat imgReflected;
+			cv::flip(imgcam1, imgReflected, 1);
+			imshow("Reflected (1)", imgReflected); //show the reflected image
+		}
+		if (b2Success) {
+			imshow("Original (2)", imgcam2);
+		}
 		if (waitKey(30) == 27) //wait for 'esc' key press for 30ms. If 'esc' key is pressed, break loop
 				{
 			cout << "esc key is pressed by user" << endl;
