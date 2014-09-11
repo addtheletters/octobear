@@ -31,6 +31,8 @@ int main(int argc, char** argv) {
 	int iLowV = 50;
 	int iHighV = 255;
 
+	bool checkA = false;
+
 	//Create trackbars in "Control" window
 	createTrackbar("LowH", "Control", &iLowH, 179); //Hue (0 - 179)
 	createTrackbar("HighH", "Control", &iHighH, 179);
@@ -51,8 +53,11 @@ int main(int argc, char** argv) {
 	//Create a black image with the size as the camera output
 	Mat imgLines = Mat::zeros(imgTmp.size(), CV_8UC3);
 	;
-
 	while (true) {
+		int key = cvWaitKey(5);  //wait for 'esc' key press for 5ms. If 'esc' key is pressed, break loop
+
+		if (key == 'a')
+			checkA = !checkA;
 		Mat imgOriginal;
 
 		bool bSuccess = cap.read(imgOriginal); // read a new frame from video
@@ -92,11 +97,15 @@ int main(int argc, char** argv) {
 		double dArea = oMoments.m00;
 
 		// if the area <= 10000, I consider that the there are no object in the image and it's because of the noise, the area is not zero
-		if (dArea > 10000) {
+		if (checkA)
+			if (dArea > 10000) {
 			//calculate the position of the ball
 			int posX = dM10 / dArea;
 			int posY = dM01 / dArea;
+			if (dArea){
 
+				cout << dM01<< "\t" << posY<<"\t" << dArea << endl;
+			}
 			if (iLastX >= 0 && iLastY >= 0 && posX >= 0 && posY >= 0) {
 				//Draw a red line from the previous point to the current point
 				line(imgLines, Point(posX, posY), Point(iLastX, iLastY),
@@ -114,11 +123,11 @@ int main(int argc, char** argv) {
 		cv::flip(imgOriginal, imgReflected, 1);
 		imshow("Reflected", imgReflected); //show the reflected image
 
-		if (waitKey(5) == 27) //wait for 'esc' key press for 5ms. If 'esc' key is pressed, break loop
-				{
+		if (key == 27){
 			cout << "esc key is pressed by user" << endl;
 			break;
 		}
+
 	}
 
 	return 0;
