@@ -58,11 +58,43 @@ bool readFrame(VideoCapture cam, Mat* frame) {
 	return success;
 }
 
-int main_ccr(int argc, char** argv) {
+void morph(Mat* img) {
+	//morphological opening (removes small objects from the foreground)
+	erode(*img, *img, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+	dilate(*img, *img, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+
+	//morphological closing (removes small holes from the foreground)
+	dilate(*img, *img, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+	erode(*img, *img, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+}
+
+Mat imgOriginal;
+Mat imgHSV;
+
+void onMouse(int event, int x, int y, int flags, void* usrdata) {
+	//cout << "NOOO" << endl;
+
+	if (event != EVENT_LBUTTONDOWN) {
+		return;
+	}
+
+	cout << "LMB clicked at (" << x << "," << y << ")" << endl;
+	Vec3b bgrPixel = imgOriginal.at<Vec3b>(x, y);
+	cout << "BGR color is [" << bgrPixel.val[0] << "," << bgrPixel.val[1] << ","
+			<< bgrPixel.val[2] << "]" << endl;
+	Vec3b hsvPixel = imgHSV.at<Vec3b>(x, y);
+	cout << "HSV color is [" << hsvPixel.val[0] << "," << hsvPixel.val[1] << ","
+			<< hsvPixel.val[2] << "]" << endl;
+	//not working. need to read up more on colors I guess.
+}
+
+int main(int argc, char** argv) {
 
 	VideoCapture cap = openCamera(0);
 
-	createWindow("Control");
+	createWindow("Ctrl");
+	createWindow("Original");
+	setMouseCallback("Original", onMouse, 0);
 
 	int iLowH = 38;
 	int iHighH = 75;
@@ -72,7 +104,7 @@ int main_ccr(int argc, char** argv) {
 
 	int iLowV = 50;
 	int iHighV = 255;
-	addHSVThresholdBars("Control", iLowH, iHighH, iLowS, iHighS, iLowV, iHighV);
+	addHSVThresholdBars("Ctrl", iLowH, iHighH, iLowS, iHighS, iLowV, iHighV);
 
 	int iLastX = -1;
 	int iLastY = -1;
@@ -83,39 +115,28 @@ int main_ccr(int argc, char** argv) {
 
 	while (true) {
 
-		Mat imgOriginal;
-		bool bSuccess = readFrame(cap, &imgOriginal);
+		//Mat imgOriginal; // global now so onmouse can access easily
+		readFrame(cap, &imgOriginal);
 
-		Mat imgHSV;
+		//imgHSV; //global now so onmouse can access easily
 		cvtColor(imgOriginal, imgHSV, COLOR_BGR2HSV); //Convert the captured frame from BGR to HSV
 
 		Mat imgThresholded;
-
 		inRange(imgHSV, Scalar(iLowH, iLowS, iLowV),
 				Scalar(iHighH, iHighS, iHighV), imgThresholded); //Threshold the image
 
-		//morphological opening (removes small objects from the foreground)
-		erode(imgThresholded, imgThresholded,
-				getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
-		dilate(imgThresholded, imgThresholded,
-				getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
-
-		//morphological closing (removes small holes from the foreground)
-		dilate(imgThresholded, imgThresholded,
-				getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
-		erode(imgThresholded, imgThresholded,
-				getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+		morph(&imgThresholded);
 
 		//Calculate the moments of the thresholded image
 		Moments oMoments = moments(imgThresholded);
 
-		double dM01 = oMoments.m01;
-		double dM10 = oMoments.m10;
-		double dArea = oMoments.m00;
+		double dM01 = oMoments.m01; // area * the ypos of 'center' of all white marks
+		double dM10 = oMoments.m10; // area * the xpos of 'center' of all white marks
+		double dArea = oMoments.m00; // area
 
 		// if the area <= 10000, I consider that the there are no object in the image and it's because of the noise, the area is not zero
 		if (dArea > 10000) {
-			//calculate the position of the ball
+			//calculate the position of the blob
 			int posX = dM10 / dArea;
 			int posY = dM01 / dArea;
 
@@ -136,7 +157,7 @@ int main_ccr(int argc, char** argv) {
 		cv::flip(imgOriginal, imgReflected, 1);
 		imshow("Reflected", imgReflected); //show the reflected image
 
-		if (waitKey(5) == 27) //wait for 'esc' key press for 5ms. If 'esc' key is pressed, break loop
+		if (waitKey(1) == 27) //wait for 'esc' key press for 5ms. If 'esc' key is pressed, break loop
 				{
 			cout << "esc key is pressed by user" << endl;
 			break;
