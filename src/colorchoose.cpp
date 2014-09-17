@@ -8,6 +8,7 @@
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include <string>
+#include <stdio.h>
 
 using namespace cv;
 using namespace std;
@@ -79,12 +80,15 @@ void onMouse(int event, int x, int y, int flags, void* usrdata) {
 	}
 
 	cout << "LMB clicked at (" << x << "," << y << ")" << endl;
-	Vec3b bgrPixel = imgOriginal.at<Vec3b>(x, y);
-	cout << "BGR color is [" << bgrPixel.val[0] << "," << bgrPixel.val[1] << ","
-			<< bgrPixel.val[2] << "]" << endl;
-	Vec3b hsvPixel = imgHSV.at<Vec3b>(x, y);
-	cout << "HSV color is [" << hsvPixel.val[0] << "," << hsvPixel.val[1] << ","
-			<< hsvPixel.val[2] << "]" << endl;
+	Vec3b bgrPixel = imgOriginal.at<Vec3b>(y, x);
+	//cout is LITERALLY HITLER (on my laptop)
+	//cout << "BGR color is [" << bgrPixel.val[0] << "," << bgrPixel.val[1] << ","
+	//		<< bgrPixel.val[2] << "]" << endl;
+	printf("BGR color is [%d, %d, %d]\n", bgrPixel.val[0], bgrPixel.val[1], bgrPixel.val[2]);
+	Vec3b hsvPixel = imgHSV.at<Vec3b>(y, x);
+	//cout << "HSV color is [" << hsvPixel.val[0] << "," << hsvPixel.val[1] << ","
+	//		<< hsvPixel.val[2] << "]" << endl;
+	printf("HSV color is [%d, %d, %d]\n", hsvPixel.val[0], hsvPixel.val[1], hsvPixel.val[2]);
 	//not working. need to read up more on colors I guess.
 }
 
