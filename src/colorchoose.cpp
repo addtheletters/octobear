@@ -13,6 +13,26 @@
 using namespace cv;
 using namespace std;
 
+
+//everyone loves global variables
+//*cough*
+
+Mat imgOriginal;
+Mat imgHSV;
+Mat imgReflected;
+Mat imgHSVReflected;
+
+int iLowH = 38;
+int iHighH = 75;
+
+int iLowS = 70;
+int iHighS = 255;
+
+int iLowV = 50;
+int iHighV = 255;
+
+
+
 VideoCapture openCamera(int num) {
 	VideoCapture cam(num); //capture the video from webcam
 
@@ -28,8 +48,8 @@ void createWindow(string window_name) {
 	namedWindow(window_name, CV_WINDOW_AUTOSIZE); //create a window called "Control"
 }
 
-void addHSVThresholdBars(string window_name, int* iLowH, int* iHighH, int* iLowS,
-		int* iHighS, int* iLowV, int* iHighV) {
+void addHSVThresholdBars(string window_name, int* iLowH, int* iHighH,
+		int* iLowS, int* iHighS, int* iLowV, int* iHighV) {
 
 	//Create trackbars in "Control" window
 	createTrackbar("LowH", window_name, iLowH, 179); //Hue (0 - 179)
@@ -69,38 +89,45 @@ void morph(Mat* img) {
 	erode(*img, *img, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
 }
 
-Mat imgOriginal;
-Mat imgHSV;
 
-int ensurePositive(int val){
-	if (val < 0){
+int ensurePositive(int val) {
+	if (val < 0) {
 		return 0;
 	}
 	return val;
 }
 
-int ensureCapped(int val, int cap){
-	if (val > cap){
+int ensureCapped(int val, int cap) {
+	if (val > cap) {
 		return cap;
 	}
 	return val;
 }
 
-int* getThreshold( int h, int s, int v ){
-	int retthresh[ 6 ];
+void getThreshold(int h, int s, int v, int retthresh[]) {
 	//these will need lots of tweaking
 	//especially saturation and value
 	//probably more arguments too.
 
-	retthresh[0] = ensurePositive(h-20);
-	retthresh[1] = ensureCapped(h+20, 179);
-	retthresh[2] = ensurePositive(s-10);
-	retthresh[3] = ensureCapped(s+10, 255);
-	retthresh[4] = ensurePositive(v-10);
-	retthresh[5] = ensureCapped(v+10, 255);
-	return retthresh;
+	retthresh[0] = ensurePositive(h - 20);
+	retthresh[1] = ensureCapped(h + 20, 179);
+	retthresh[2] = ensurePositive(s - 30);
+	retthresh[3] = ensureCapped(s + 80, 255);
+	retthresh[4] = ensurePositive(v - 50);
+	retthresh[5] = ensureCapped(v + 80, 255);
+	//return retthresh;
 }
 
+void setThreshold(int threshvals[]){
+	iLowH = threshvals[0];
+	iHighH = threshvals[1];
+
+	iLowS = threshvals[2];
+	iHighS = threshvals[3];
+
+	iLowV = threshvals[4];
+	iHighV = threshvals[5];
+}
 
 void onMouse(int event, int x, int y, int flags, void* usrdata) {
 	//cout << "NOOO" << endl;
@@ -114,12 +141,25 @@ void onMouse(int event, int x, int y, int flags, void* usrdata) {
 	//cout is LITERALLY HITLER (on my laptop)
 	//cout << "BGR color is [" << bgrPixel.val[0] << "," << bgrPixel.val[1] << ","
 	//		<< bgrPixel.val[2] << "]" << endl;
-	printf("BGR color is [%d, %d, %d]\n", bgrPixel.val[0], bgrPixel.val[1], bgrPixel.val[2]);
-	Vec3b hsvPixel = imgHSV.at<Vec3b>(y, x);
+	printf("BGR color is [%d, %d, %d]\n", bgrPixel.val[0], bgrPixel.val[1],
+			bgrPixel.val[2]);
+	cv::flip(imgHSV, imgHSVReflected, 1);
+	Vec3b hsvPixel = imgHSVReflected.at<Vec3b>(y, x);
 	//cout << "HSV color is [" << hsvPixel.val[0] << "," << hsvPixel.val[1] << ","
 	//		<< hsvPixel.val[2] << "]" << endl;
-	printf("HSV color is [%d, %d, %d]\n", hsvPixel.val[0], hsvPixel.val[1], hsvPixel.val[2]);
+	printf("HSV color is [%d, %d, %d]\n", hsvPixel.val[0], hsvPixel.val[1],
+			hsvPixel.val[2]);
 
+	int threshvals[6];
+	getThreshold((int)hsvPixel.val[0], (int)hsvPixel.val[1], (int)hsvPixel.val[2], threshvals);
+	printf("Setting threshold bounds H(%d,%d) S(%d,%d) V(%d,%d).\n",
+			threshvals[0],
+			threshvals[1],
+			threshvals[2],
+			threshvals[3],
+			threshvals[4],
+			threshvals[5]);
+	setThreshold(threshvals);
 	//printfs alone were not giving output until the next cout was reached
 	cout << "force out?" << endl;
 }
@@ -129,18 +169,11 @@ int main(int argc, char** argv) {
 	VideoCapture cap = openCamera(0);
 
 	createWindow("Ctrl");
-	createWindow("Original");
-	setMouseCallback("Original", onMouse, 0);
+	createWindow("Reflected");
+	setMouseCallback("Reflected", onMouse, 0);
 
-	int iLowH = 38;
-	int iHighH = 75;
-
-	int iLowS = 70;
-	int iHighS = 255;
-
-	int iLowV = 50;
-	int iHighV = 255;
-	addHSVThresholdBars("Ctrl", &iLowH, &iHighH, &iLowS, &iHighS, &iLowV, &iHighV);
+	addHSVThresholdBars("Ctrl", &iLowH, &iHighH, &iLowS, &iHighS, &iLowV,
+			&iHighV);
 
 	int iLastX = -1;
 	int iLastY = -1;
@@ -186,10 +219,13 @@ int main(int argc, char** argv) {
 			iLastY = posY;
 		}
 
-		imshow("Thresholded Image", imgThresholded); //show the thresholded image
+
+		Mat imgThresholdedReflected;
+		cv::flip(imgThresholded, imgThresholdedReflected, 1);
+		imshow("Thresholded + Reflected Image", imgThresholdedReflected); //show the thresholded image
 		imgOriginal = imgOriginal + imgLines;
-		imshow("Original", imgOriginal); //show the original image
-		Mat imgReflected;
+		//imshow("Original", imgOriginal); //show the original image
+
 		cv::flip(imgOriginal, imgReflected, 1);
 		imshow("Reflected", imgReflected); //show the reflected image
 
