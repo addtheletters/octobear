@@ -28,18 +28,18 @@ void createWindow(string window_name) {
 	namedWindow(window_name, CV_WINDOW_AUTOSIZE); //create a window called "Control"
 }
 
-void addHSVThresholdBars(string window_name, int iLowH, int iHighH, int iLowS,
-		int iHighS, int iLowV, int iHighV) {
+void addHSVThresholdBars(string window_name, int* iLowH, int* iHighH, int* iLowS,
+		int* iHighS, int* iLowV, int* iHighV) {
 
 	//Create trackbars in "Control" window
-	createTrackbar("LowH", window_name, &iLowH, 179); //Hue (0 - 179)
-	createTrackbar("HighH", window_name, &iHighH, 179);
+	createTrackbar("LowH", window_name, iLowH, 179); //Hue (0 - 179)
+	createTrackbar("HighH", window_name, iHighH, 179);
 
-	createTrackbar("LowS", window_name, &iLowS, 255); //Saturation (0 - 255)
-	createTrackbar("HighS", window_name, &iHighS, 255);
+	createTrackbar("LowS", window_name, iLowS, 255); //Saturation (0 - 255)
+	createTrackbar("HighS", window_name, iHighS, 255);
 
-	createTrackbar("LowV", window_name, &iLowV, 255); //Value (0 - 255)
-	createTrackbar("HighV", window_name, &iHighV, 255);
+	createTrackbar("LowV", window_name, iLowV, 255); //Value (0 - 255)
+	createTrackbar("HighV", window_name, iHighV, 255);
 
 }
 
@@ -72,6 +72,12 @@ void morph(Mat* img) {
 Mat imgOriginal;
 Mat imgHSV;
 
+int* getThreshold( int r, int g, int b ){
+	//int[] thresh = new int[ 4 ];
+	//return thresh;
+}
+
+
 void onMouse(int event, int x, int y, int flags, void* usrdata) {
 	//cout << "NOOO" << endl;
 
@@ -89,7 +95,9 @@ void onMouse(int event, int x, int y, int flags, void* usrdata) {
 	//cout << "HSV color is [" << hsvPixel.val[0] << "," << hsvPixel.val[1] << ","
 	//		<< hsvPixel.val[2] << "]" << endl;
 	printf("HSV color is [%d, %d, %d]\n", hsvPixel.val[0], hsvPixel.val[1], hsvPixel.val[2]);
-	//not working. need to read up more on colors I guess.
+
+	//printfs alone were not giving output until the next cout was reached
+	cout << "force out?" << endl;
 }
 
 int main(int argc, char** argv) {
@@ -103,12 +111,12 @@ int main(int argc, char** argv) {
 	int iLowH = 38;
 	int iHighH = 75;
 
-	int iLowS = 150;
+	int iLowS = 70;
 	int iHighS = 255;
 
 	int iLowV = 50;
 	int iHighV = 255;
-	addHSVThresholdBars("Ctrl", iLowH, iHighH, iLowS, iHighS, iLowV, iHighV);
+	addHSVThresholdBars("Ctrl", &iLowH, &iHighH, &iLowS, &iHighS, &iLowV, &iHighV);
 
 	int iLastX = -1;
 	int iLastY = -1;
