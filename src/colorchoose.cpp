@@ -72,9 +72,33 @@ void morph(Mat* img) {
 Mat imgOriginal;
 Mat imgHSV;
 
-int* getThreshold( int r, int g, int b ){
-	//int[] thresh = new int[ 4 ];
-	//return thresh;
+int ensurePositive(int val){
+	if (val < 0){
+		return 0;
+	}
+	return val;
+}
+
+int ensureCapped(int val, int cap){
+	if (val > cap){
+		return cap;
+	}
+	return val;
+}
+
+int* getThreshold( int h, int s, int v ){
+	int retthresh[ 6 ];
+	//these will need lots of tweaking
+	//especially saturation and value
+	//probably more arguments too.
+
+	retthresh[0] = ensurePositive(h-20);
+	retthresh[1] = ensureCapped(h+20, 179);
+	retthresh[2] = ensurePositive(s-10);
+	retthresh[3] = ensureCapped(s+10, 255);
+	retthresh[4] = ensurePositive(v-10);
+	retthresh[5] = ensureCapped(v+10, 255);
+	return retthresh;
 }
 
 
