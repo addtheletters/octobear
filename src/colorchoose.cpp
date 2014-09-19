@@ -31,6 +31,9 @@ int iHighS = 255;
 int iLowV = 50;
 int iHighV = 255;
 
+int ASCII_CODE_ESCAPE = 27;
+int ASCII_CODE_a_KEY = 97;
+
 
 
 VideoCapture openCamera(int num) {
@@ -228,11 +231,15 @@ int main(int argc, char** argv) {
 
 		cv::flip(imgOriginal, imgReflected, 1);
 		imshow("Reflected", imgReflected); //show the reflected image
-
-		if (waitKey(1) == 27) //wait for 'esc' key press for 5ms. If 'esc' key is pressed, break loop
-				{
-			cout << "esc key is pressed by user" << endl;
+		int keypress = waitKey(1);
+		if ( keypress == ASCII_CODE_ESCAPE ) //wait for 'esc' key press for 5ms. If 'esc' key is pressed, break loop
+		{
+			cout << "esc key is pressed by user, quitting." << endl;
 			break;
+		}
+		else if( keypress == ASCII_CODE_a_KEY ){
+			cout << "a key is pressed by user, clearing tracklines." << endl;
+			imgLines = getBlankFromCam(cap);
 		}
 	}
 
