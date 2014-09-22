@@ -31,6 +31,8 @@ int iHighS = 255;
 int iLowV = 50;
 int iHighV = 255;
 
+int drawcolor[] = {0, 0, 255};
+
 int ASCII_CODE_ESCAPE = 27;
 int ASCII_CODE_a_KEY = 97;
 
@@ -153,8 +155,14 @@ void onMouse(int event, int x, int y, int flags, void* usrdata) {
 	printf("HSV color is [%d, %d, %d]\n", hsvPixel.val[0], hsvPixel.val[1],
 			hsvPixel.val[2]);
 
+	drawcolor[0] = (int)bgrPixel.val[0];
+	drawcolor[1] = (int)bgrPixel.val[1];
+	drawcolor[2] = (int)bgrPixel.val[2];
+
 	int threshvals[6];
 	getThreshold((int)hsvPixel.val[0], (int)hsvPixel.val[1], (int)hsvPixel.val[2], threshvals);
+
+
 	printf("Setting threshold bounds H(%d,%d) S(%d,%d) V(%d,%d).\n",
 			threshvals[0],
 			threshvals[1],
@@ -215,7 +223,7 @@ int main(int argc, char** argv) {
 			if (iLastX >= 0 && iLastY >= 0 && posX >= 0 && posY >= 0) {
 				//Draw a red line from the previous point to the current point
 				line(imgLines, Point(posX, posY), Point(iLastX, iLastY),
-						Scalar(0, 0, 255), 2);
+						Scalar(drawcolor[0], drawcolor[1], drawcolor[2]), 2);
 			}
 
 			iLastX = posX;
@@ -226,6 +234,7 @@ int main(int argc, char** argv) {
 		Mat imgThresholdedReflected;
 		cv::flip(imgThresholded, imgThresholdedReflected, 1);
 		imshow("Thresholded + Reflected Image", imgThresholdedReflected); //show the thresholded image
+		//imgOriginal = imgOriginal / 3;
 		imgOriginal = imgOriginal + imgLines;
 		//imshow("Original", imgOriginal); //show the original image
 
