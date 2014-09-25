@@ -26,9 +26,9 @@ void on_mouse(int event, int x, int y, int flags, void* param) {
 	}
 }
 
-int main_kal(int argc, char** argv) {
+int main(int argc, char** argv) {
 	Mat img(500, 500, CV_8UC3);
-	KalmanFilter KF(4, 2, 0);
+	cv::KalmanFilter KF(4, 2, 0, CV_32F);
 	Mat_<float> state(4, 1); // (x, y, Vx, Vy)
 	Mat processNoise(4, 1, CV_32F);
 	Mat_<float> measurement(2, 1);
@@ -44,6 +44,7 @@ int main_kal(int argc, char** argv) {
 			waitKey(30);
 			continue;
 		}
+
 		KF.statePre.at<float>(0) = mouse_info.x;
 		KF.statePre.at<float>(1) = mouse_info.y;
 		KF.statePre.at<float>(2) = 0;
@@ -103,7 +104,7 @@ int main_kal(int argc, char** argv) {
 //            state = KF.transitionMatrix*state + processNoise;
 
 			imshow("mouse kalman", img);
-			code = (char) waitKey(100);
+			code = (char) waitKey(10);
 
 			if (code > 0)
 				break;
