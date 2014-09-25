@@ -27,11 +27,15 @@ void on_mouse(int event, int x, int y, int flags, void* param) {
 }
 
 int main(int argc, char** argv) {
+
+	int dynamParams = 4;
+	int measureParams = 2;
+
 	Mat img(500, 500, CV_8UC3);
-	cv::KalmanFilter KF(4, 2, 0, CV_32F);
-	Mat_<float> state(4, 1); // (x, y, Vx, Vy)
-	Mat processNoise(4, 1, CV_32F);
-	Mat_<float> measurement(2, 1);
+	cv::KalmanFilter KF(dynamParams, measureParams, 0, CV_32F);
+	Mat_<float> state(dynamParams, 1); // (x, y, Vx, Vy)
+	Mat processNoise(dynamParams, 1, CV_32F);
+	Mat_<float> measurement(measureParams, 1);
 	measurement.setTo(Scalar(0));
 	char code = (char) -1;
 
@@ -50,7 +54,7 @@ int main(int argc, char** argv) {
 		KF.statePre.at<float>(2) = 0;
 		KF.statePre.at<float>(3) = 0;
 		KF.transitionMatrix =
-				*(Mat_<float>(4, 4) << 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+				*(Mat_<float>(dynamParams, dynamParams) << 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
 
 		setIdentity(KF.measurementMatrix);
 		setIdentity(KF.processNoiseCov, Scalar::all(1e-4));
