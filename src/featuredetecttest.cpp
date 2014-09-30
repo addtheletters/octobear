@@ -28,12 +28,12 @@ int main( int argc, char** argv )
   params.minDistBetweenBlobs = 100.0f;
   params.filterByInertia = false;
   params.filterByConvexity = false;
-  params.filterByColor = false;//true;
+  params.filterByColor = true;
   params.filterByCircularity = false;
-  params.filterByArea = true;
-  //params.blobColor = ???;
-  params.minArea = 300.0f;
-  params.maxArea = 1000.0f;
+  params.filterByArea = false;
+  params.blobColor = 255;
+  //params.minArea = 300.0f;
+  //params.maxArea = 1000.0f;
 
   SimpleBlobDetector detector( params );
 
