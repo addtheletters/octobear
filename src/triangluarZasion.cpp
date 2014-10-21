@@ -11,7 +11,7 @@
 using namespace cv;
 using namespace std;
 
-int main(int argc, char** argv) {
+int main_tr(int argc, char** argv) {
 	VideoCapture cap(0); //capture the video from webcam
 	VideoCapture cap1(2);
 	VideoCapture cap2(1);
