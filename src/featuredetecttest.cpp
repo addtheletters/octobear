@@ -12,7 +12,7 @@ using namespace std;
 void readme();
 
 /** @function main */
-int main(int argc, char** argv) {
+int featuredetect(int argc, char** argv) {
 	if( argc != 3 )
 	{ readme(); return -1; }
 

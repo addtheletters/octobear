@@ -26,7 +26,7 @@ void help()
         << "--------------------------------------------------------------------------"   << endl
         << endl;
 }
-int main_1(int argc, char *argv[], char *window_name)
+int twocams(int argc, char *argv[], char *window_name)
 {
     help();
     if (argc != 5)

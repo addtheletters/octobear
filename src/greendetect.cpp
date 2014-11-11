@@ -11,7 +11,7 @@
 using namespace cv;
 using namespace std;
 
-int main_gdt(int argc, char** argv) {
+int greendetect(int argc, char** argv) {
 	VideoCapture cap(0); //capture the video from web cam
 	VideoCapture cap1(1);
 	VideoCapture cap2(2);

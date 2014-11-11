@@ -37,7 +37,7 @@ Mat threshold(Mat imgOriginal, InputArray LowS,InputArray HighS) {
         return imgThresholded;
 }
 
-int mian(int argc, char** argv) {
+int twostreams(int argc, char** argv) {
 	VideoCapture cap(1); //capture the video from webcam
     VideoCapture cap1(2);
 

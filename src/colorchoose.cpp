@@ -175,7 +175,7 @@ void onMouse(int event, int x, int y, int flags, void* usrdata) {
 	cout << "force out?" << endl;
 }
 
-int main_cc(int argc, char** argv) {
+int colorchoose(int argc, char** argv) {
 
 	VideoCapture cap = openCamera(0);
 

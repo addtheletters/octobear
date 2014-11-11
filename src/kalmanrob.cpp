@@ -26,7 +26,7 @@ void on_mouse(int event, int x, int y, int flags, void* param) {
 	}
 }
 
-int main_kalman(int argc, char** argv) {
+int kalmanrob(int argc, char** argv) {
 
 	int dynamParams = 4;
 	int measureParams = 2;
