@@ -9,12 +9,12 @@
 using namespace cv;
 using namespace std;
 
-void readme();
+void readme_fdt();
 
 /** @function main */
 int featuredetect(int argc, char** argv) {
 	if( argc != 3 )
-	{ readme(); return -1; }
+	{ readme_fdt(); return -1; }
 
 	Mat img_1 = imread(argv[1], CV_LOAD_IMAGE_GRAYSCALE );
 	Mat img_2 = imread(argv[2], CV_LOAD_IMAGE_GRAYSCALE );
@@ -75,6 +75,6 @@ int featuredetect(int argc, char** argv) {
 }
 
 /** @function readme */
-void readme() {
+void readme_fdt() {
 	std::cout << " Usage: ./wjatever_detector <img1> <img2>" << std::endl;
 }
