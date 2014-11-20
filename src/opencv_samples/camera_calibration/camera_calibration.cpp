@@ -274,13 +274,17 @@ int sample_calibration(int argc, char* argv[]) {
 			found = findChessboardCorners(view, s.boardSize, pointBuf,
 					CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FAST_CHECK
 							| CV_CALIB_CB_NORMALIZE_IMAGE);
+
+			cout << "chessboard corners maybe found" << endl;
 			break;
 		case Settings::CIRCLES_GRID:
 			found = findCirclesGrid(view, s.boardSize, pointBuf);
+			cout << "circle grid maybe found" << endl;
 			break;
 		case Settings::ASYMMETRIC_CIRCLES_GRID:
 			found = findCirclesGrid(view, s.boardSize, pointBuf,
 					CALIB_CB_ASYMMETRIC_GRID);
+			cout << "asym circle grid maybe found" << endl;
 			break;
 		default:
 			found = false;
@@ -289,6 +293,7 @@ int sample_calibration(int argc, char* argv[]) {
 
 		if (found)                // If done with success,
 		{
+			cout << "indeed found!" << endl;
 			// improve the found corners' coordinate accuracy for chessboard
 			if (s.calibrationPattern == Settings::CHESSBOARD) {
 				Mat viewGray;
@@ -465,6 +470,9 @@ static void saveCameraParams(Settings& s, Size& imageSize, Mat& cameraMatrix,
 		Mat& distCoeffs, const vector<Mat>& rvecs, const vector<Mat>& tvecs,
 		const vector<float>& reprojErrs,
 		const vector<vector<Point2f> >& imagePoints, double totalAvgErr) {
+
+	cout << "saving camera params" << endl;
+
 	FileStorage fs(s.outputFileName, FileStorage::WRITE);
 
 	time_t tm;
