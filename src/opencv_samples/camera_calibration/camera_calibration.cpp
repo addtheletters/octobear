@@ -214,6 +214,9 @@ bool runCalibrationAndSave(Settings& s, Size imageSize, Mat& cameraMatrix,
 		Mat& distCoeffs, vector<vector<Point2f> > imagePoints);
 
 int sample_calibration(int argc, char* argv[]) {
+
+	bool show_debug = false;
+
 	help();
 	Settings s;
 	const string inputSettingsFile = argc > 1 ? argv[1] : "default.xml";
@@ -275,16 +278,16 @@ int sample_calibration(int argc, char* argv[]) {
 					CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FAST_CHECK
 							| CV_CALIB_CB_NORMALIZE_IMAGE);
 
-			cout << "chessboard corners maybe found" << endl;
+			if(show_debug) cout << "chessboard corners maybe found" << endl;
 			break;
 		case Settings::CIRCLES_GRID:
 			found = findCirclesGrid(view, s.boardSize, pointBuf);
-			cout << "circle grid maybe found" << endl;
+			if(show_debug) cout << "circle grid maybe found" << endl;
 			break;
 		case Settings::ASYMMETRIC_CIRCLES_GRID:
 			found = findCirclesGrid(view, s.boardSize, pointBuf,
 					CALIB_CB_ASYMMETRIC_GRID);
-			cout << "asym circle grid maybe found" << endl;
+			if(show_debug) cout << "asym circle grid maybe found" << endl;
 			break;
 		default:
 			found = false;
@@ -293,7 +296,7 @@ int sample_calibration(int argc, char* argv[]) {
 
 		if (found)                // If done with success,
 		{
-			cout << "indeed found!" << endl;
+			if(show_debug) cout << "indeed found!" << endl;
 			// improve the found corners' coordinate accuracy for chessboard
 			if (s.calibrationPattern == Settings::CHESSBOARD) {
 				Mat viewGray;
@@ -558,8 +561,11 @@ bool runCalibrationAndSave(Settings& s, Size imageSize, Mat& cameraMatrix,
 	cout << (ok ? "Calibration succeeded" : "Calibration failed")
 			<< ". avg re projection error = " << totalAvgErr;
 
-	if (ok)
+	if (ok){
+		cout << "\nCamera Matrix: \n" << cameraMatrix << endl;
+
 		saveCameraParams(s, imageSize, cameraMatrix, distCoeffs, rvecs, tvecs,
 				reprojErrs, imagePoints, totalAvgErr);
+	}
 	return ok;
 }
