@@ -20,9 +20,9 @@ int main( int argc, char** argv ){
 	//sample_calibration(argc, argv);
 	//string args[2] = {"sc1.jpg", "sc2.jpg"};
 
-	//featuredetect(argc, argv);
+	featuredetect(argc, argv);
 	//unworked_triag(argc, argv);
 
-	sample_stereo_calibration(argc, argv);
+	//sample_stereo_calibration(argc, argv);
 
 }

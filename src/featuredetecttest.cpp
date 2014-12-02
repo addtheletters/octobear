@@ -30,11 +30,11 @@ int featuredetect(int argc, char** argv) {
 	params.minDistBetweenBlobs = 50.0f;
 	params.filterByInertia = false;
 	params.filterByConvexity = false;
-	params.filterByColor = true;
+	params.filterByColor = false;
 	params.filterByCircularity = false;
 	params.filterByArea = true;
 	params.minArea = 20.0f;
-	params.maxArea = 50000.0f;
+	params.maxArea = 5000.0f;
 	// ... any other params you don't want default value
 
 	// set up and create the detector using the parameters
@@ -49,10 +49,10 @@ int featuredetect(int argc, char** argv) {
 	cout << "good" << endl;
 
 	blob_detector->detect(img_1, keypoints_1);
-	cout << "KPs 1:\n" << Mat(keypoints_1) << endl;
+	//cout << "KPs 1:\n" << Mat(keypoints_1) << endl;
 
 	blob_detector->detect(img_2, keypoints_2);
-	cout << "KPs 2:\n" << Mat(keypoints_2) << endl;
+	//cout << "KPs 2:\n" << Mat(keypoints_2) << endl;
 
 	//-- Draw keypoints
 	Mat img_keypoints_1;
