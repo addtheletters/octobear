@@ -12,7 +12,7 @@
 
 
 int colorchoose(int argc, char** argv);
-int featuredetect(int argc, char** argv);
+int featuredetect(int argc, char** argv, bool inverse = false);
 int greendetect(int argc, char** argv);
 int kalmanrob(int argc, char** argv);
 int tracking(int argc, char** argv);

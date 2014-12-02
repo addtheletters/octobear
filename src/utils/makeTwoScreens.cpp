@@ -33,7 +33,7 @@ void loadImages(int argc, char** argv, Mat* img1, Mat* img2) {
 	img1 = &matt;
 	img2 = &savage;
 
-	featuredetect(argc, argv);
+	//featuredetect(argc, argv);
 
 	openTwoScreens(img1, img2);
 }

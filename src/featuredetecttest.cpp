@@ -12,13 +12,20 @@ using namespace std;
 void readme_fdt();
 
 /** @function main */
-int featuredetect(int argc, char** argv) {
-	if( argc != 3 )
-	{ readme_fdt(); return -1; }
+int featuredetect(int argc, char** argv, bool inverse = false) {
+	if (argc != 3) {
+		readme_fdt();
+		return -1;
+	}
 
-	Mat img_1 = imread(argv[1], CV_LOAD_IMAGE_GRAYSCALE );
-	Mat img_2 = imread(argv[2], CV_LOAD_IMAGE_GRAYSCALE );
+	Mat img_1 = imread(argv[1], CV_LOAD_IMAGE_GRAYSCALE);
+	Mat img_2 = imread(argv[2], CV_LOAD_IMAGE_GRAYSCALE);
 
+	if (inverse) {
+		bitwise_not(img_1, img_1);
+		bitwise_not(img_2, img_2);
+		cout << "inverting grayscale image" << endl;
+	}
 	if (!img_1.data || !img_2.data) {
 		std::cout << " --(!) Error reading images " << std::endl;
 		return -1;
@@ -35,6 +42,7 @@ int featuredetect(int argc, char** argv) {
 	params.filterByArea = true;
 	params.minArea = 20.0f;
 	params.maxArea = 5000.0f;
+
 	// ... any other params you don't want default value
 
 	// set up and create the detector using the parameters
