@@ -19,7 +19,7 @@ int tracking(int argc, char** argv);
 int unworked_triag(int argc, char** argv);
 int twocams(int argc, char *argv[], char *window_name);
 int twostreams(int argc, char** argv) ;
-void loadImages(char* img_n1, char* img_n2 , cv::Mat* img1, cv::Mat* img2);
+void loadImages(int argc, char** argv, cv::Mat* img1, cv::Mat* img2);
 
 
 int sample_SBM( int argc, char** argv );

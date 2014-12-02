@@ -30,11 +30,11 @@ int featuredetect(int argc, char** argv) {
 	params.minDistBetweenBlobs = 50.0f;
 	params.filterByInertia = false;
 	params.filterByConvexity = false;
-	params.filterByColor = false;
+	params.filterByColor = true;
 	params.filterByCircularity = false;
 	params.filterByArea = true;
 	params.minArea = 20.0f;
-	params.maxArea = 500.0f;
+	params.maxArea = 50000.0f;
 	// ... any other params you don't want default value
 
 	// set up and create the detector using the parameters
