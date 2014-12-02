@@ -49,10 +49,10 @@ int featuredetect(int argc, char** argv) {
 	cout << "good" << endl;
 
 	blob_detector->detect(img_1, keypoints_1);
-	cout << "good" << endl;
+	cout << "KPs 1:\n" << Mat(keypoints_1) << endl;
 
 	blob_detector->detect(img_2, keypoints_2);
-	cout << "good" << endl;
+	cout << "KPs 2:\n" << Mat(keypoints_2) << endl;
 
 	//-- Draw keypoints
 	Mat img_keypoints_1;
