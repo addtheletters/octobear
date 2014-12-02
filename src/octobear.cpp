@@ -13,7 +13,7 @@ using namespace std;
 Mat img1, img2;
 
 int main( int argc, char** argv ){
-	loadImages(argc, argv, &img1, &img2);
+	//loadImages(argc, argv, &img1, &img2);
 	//kalmanrob(argc, argv);
 
 	//sample_SBM(argc, argv);
@@ -22,4 +22,7 @@ int main( int argc, char** argv ){
 
 	//featuredetect(argc, argv);
 	//unworked_triag(argc, argv);
+
+	sample_stereo_calibration(argc, argv);
+
 }

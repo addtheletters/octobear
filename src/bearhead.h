@@ -24,5 +24,6 @@ void loadImages(int argc, char** argv, cv::Mat* img1, cv::Mat* img2);
 
 int sample_SBM( int argc, char** argv );
 int sample_calibration(int argc, char* argv[]);
+int sample_stereo_calibration(int argc, char** argv);
 
 #endif /* BEARHEAD_H_ */
