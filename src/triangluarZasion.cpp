@@ -48,9 +48,9 @@ int unworked_triag(int argc, char** argv) {
 			2.3950000000000000e+002, 0 }, { 0., 0., 1., 0 } };
 
 	// this one is BS
-	float calib_arr2[3][4] = { { 3.5746697810243404e+002, 0.,
-			1.1950000000000000e+002, 0 }, { 0., 2.5746697810243404e+002,
-			1.3950000000000000e+002, 0 }, { 0., 0., 1., 0 } };
+	float calib_arr2[3][4] = { { 6.5546697810243404e+002, 0.,
+			3.1900000000000000e+002, 0 }, { 0., 6.5706697810243404e+002,
+			2.3900000000000000e+002, 0 }, { 0., 0., 1., 0 } };
 
 	Mat camera1 = Mat(3, 4, CV_32F, calib_arr1);
 	Mat camera2 = Mat(3, 4, CV_32F, calib_arr2);
@@ -63,8 +63,8 @@ int unworked_triag(int argc, char** argv) {
 	Mat pts3d = Mat(1, num_pts, CV_64FC4);
 
 	Mat cam1pts = Mat(1, num_pts, CV_64FC2);
-	putPointIn1DMat(cam1pts, 0, 150, 100);
-	putPointIn1DMat(cam1pts, 1, 300, 200);
+	putPointIn1DMat(cam1pts, 0, 1, 1);
+	putPointIn1DMat(cam1pts, 1, 1, 1);
 	Mat cam2pts = Mat(1, num_pts, CV_64FC2);
 	putPointIn1DMat(cam2pts, 0, 200, 110);
 	putPointIn1DMat(cam2pts, 1, 370, 230);
@@ -80,10 +80,12 @@ int unworked_triag(int argc, char** argv) {
 
 	cout << "\n hold your breath again \n ---------- \n" << endl;
 
-	Point3d one = Point3d(150, 100, 1);
-	Point3d two = Point3d(300, 200, 1);
+	Point3d one = Point3d(.1, .3, 1);
+	Point3d two = Point3d(.5, .4, 1);
 
-	Mat linear_sth = LinearLSTriangulation( one, camera1, two, camera2 );
+	//Mat_ um1 =
+
+	Mat_<double> linear_sth = LinearLSTriangulation( one, camera1, two, camera2 );
 
 	cout << "LinearLSTriangulation 3D pt: \n" << linear_sth << endl;
 
