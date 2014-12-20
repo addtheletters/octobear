@@ -10,7 +10,9 @@
 using namespace cv;
 using namespace std;
 
-Mat img1, img2;
+Mat img1, img2, img3, img4;
+
+
 
 int main( int argc, char** argv ){
 	//loadImages(argc, argv, &img1, &img2);
