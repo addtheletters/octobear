@@ -12,7 +12,7 @@ using namespace std;
 void readme_fdt();
 
 /** @function main */
-int featuredetect(int argc, char** argv, bool inverse = false) {
+int featuredetect(int argc, char** argv, vector<KeyPoint>* blobpoint1, vector<KeyPoint>* blobpoint2, bool inverse = false) {
 	if (argc != 3) {
 		readme_fdt();
 		return -1;
@@ -46,13 +46,13 @@ int featuredetect(int argc, char** argv, bool inverse = false) {
 	// ... any other params you don't want default value
 
 	// set up and create the detector using the parameters
-	cv::Ptr<cv::FeatureDetector> blob_detector = new cv::SimpleBlobDetector(
+	Ptr<FeatureDetector> blob_detector = new SimpleBlobDetector(
 			params);
 	blob_detector->create("SimpleBlob");
 
 	// detect!
 
-	std::vector<KeyPoint> keypoints_1, keypoints_2;
+	vector<KeyPoint> keypoints_1, keypoints_2;
 
 	cout << "good" << endl;
 
@@ -76,6 +76,10 @@ int featuredetect(int argc, char** argv, bool inverse = false) {
 	imshow("Keypoints 1", img_keypoints_1);
 	imshow("Keypoints 2", img_keypoints_2);
 	cout << "good" << endl;
+
+	*blobpoint1 = keypoints_1;
+	*blobpoint2 = keypoints_2;
+
 
 	waitKey(0);
 
