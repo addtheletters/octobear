@@ -354,17 +354,20 @@ int sample_stereo_calibration(int argc, char** argv)
         {
             if( sscanf(argv[++i], "%d", &boardSize.width) != 1 || boardSize.width <= 0 )
             {
-                cout << "invalid board width" << endl;
+            	cout << "invalid board width" << endl;
                 return print_help();
             }
+            cout <<  "board width: " << boardSize.width << endl;
+
         }
         else if( string(argv[i]) == "-h" )
         {
             if( sscanf(argv[++i], "%d", &boardSize.height) != 1 || boardSize.height <= 0 )
             {
-                cout << "invalid board height" << endl;
+            	cout << "invalid board height" << endl;
                 return print_help();
             }
+            cout <<  "board height: " << boardSize.height << endl;
         }
         else if( string(argv[i]) == "-nr" )
             showRectified = false;
