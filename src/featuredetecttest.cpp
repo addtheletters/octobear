@@ -12,7 +12,7 @@ using namespace std;
 void readme_fdt();
 
 /** @function main */
-int featuredetect(int argc, char** argv, vector<KeyPoint>* blobpoint1, vector<KeyPoint>* blobpoint2, bool inverse = false) {
+int featuredetect(int argc, char** argv, vector<KeyPoint>& blobpoint1, vector<KeyPoint>& blobpoint2, bool inverse = false) {
 	if (argc != 3) {
 		readme_fdt();
 		return -1;
@@ -70,17 +70,18 @@ int featuredetect(int argc, char** argv, vector<KeyPoint>* blobpoint1, vector<Ke
 			DrawMatchesFlags::DEFAULT);
 	drawKeypoints(img_2, keypoints_2, img_keypoints_2, Scalar::all(-1),
 			DrawMatchesFlags::DEFAULT);
-	cout << "good" << endl;
+	cout << "good?" << endl;
 
 	//-- Show detected (drawn) keypoints
 	imshow("Keypoints 1", img_keypoints_1);
 	imshow("Keypoints 2", img_keypoints_2);
 	cout << "good" << endl;
 
-	*blobpoint1 = keypoints_1;
-	*blobpoint2 = keypoints_2;
 
+	blobpoint1 = keypoints_1;
+	blobpoint2 = keypoints_2;
 
+	cout << "The featuredetect is done!\n" << endl;
 	waitKey(0);
 
 	return 0;

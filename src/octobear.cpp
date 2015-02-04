@@ -27,7 +27,7 @@ int main( int argc, char** argv ){
 	//featuredetect(argc, argv);
 	//unworked_triag(argc, argv);
 
-	featuredetect(argc, argv, &point1,&point2, true);
+	triangulateTwoPoints(argc, argv);
 
 	//unworked_triag(argc, argv);
 
