@@ -12,7 +12,8 @@ using namespace std;
 void readme_fdt();
 
 /** @function main */
-int featuredetect(int argc, char** argv, vector<KeyPoint>& blobpoint1, vector<KeyPoint>& blobpoint2, bool inverse = false) {
+int featuredetect(int argc, char** argv, vector<KeyPoint>& blobpoint1,
+		vector<KeyPoint>& blobpoint2, bool inverse = false) {
 	if (argc != 3) {
 		readme_fdt();
 		return -1;
@@ -46,8 +47,7 @@ int featuredetect(int argc, char** argv, vector<KeyPoint>& blobpoint1, vector<Ke
 	// ... any other params you don't want default value
 
 	// set up and create the detector using the parameters
-	Ptr<FeatureDetector> blob_detector = new SimpleBlobDetector(
-			params);
+	Ptr<FeatureDetector> blob_detector = new SimpleBlobDetector(params);
 	blob_detector->create("SimpleBlob");
 
 	// detect!
@@ -77,13 +77,59 @@ int featuredetect(int argc, char** argv, vector<KeyPoint>& blobpoint1, vector<Ke
 	imshow("Keypoints 2", img_keypoints_2);
 	cout << "good" << endl;
 
-
 	blobpoint1 = keypoints_1;
 	blobpoint2 = keypoints_2;
 
 	cout << "The featuredetect is done!\n" << endl;
 	waitKey(0);
 
+	return 0;
+}
+
+/*
+ * img_1 and 2 grayscale image
+ *
+ */
+int featuredetect_essential(Mat img_1, Mat img_2, vector<KeyPoint>& blobpoint1,
+		vector<KeyPoint>& blobpoint2, bool inverse = false) {
+
+	if (inverse) {
+		bitwise_not(img_1, img_1);
+		bitwise_not(img_2, img_2);
+		cout << "inverting grayscale image" << endl;
+	}
+
+	if (!img_1.data || !img_2.data) {
+		std::cout << " --(!) Error reading images " << std::endl;
+		return -1;
+	}
+
+	cv::SimpleBlobDetector::Params params;
+	params.minDistBetweenBlobs = 50.0f;
+	//params.filterByInertia = false;
+	//params.filterByConvexity = false;
+	//params.filterByColor = false;
+	//params.filterByCircularity = false;
+	params.filterByArea = true;
+	params.minArea = 20.0f;
+	params.maxArea = 5000.0f;
+	Ptr<FeatureDetector> blob_detector = new SimpleBlobDetector(params);
+	blob_detector->create("SimpleBlob");
+
+	vector<KeyPoint> keypoints_1, keypoints_2;
+	blob_detector->detect(img_1, keypoints_1);
+	blob_detector->detect(img_2, keypoints_2);
+
+	//-- Draw keypoints
+	Mat img_keypoints_1;
+	Mat img_keypoints_2;
+	drawKeypoints(img_1, keypoints_1, img_keypoints_1, Scalar::all(-1),
+			DrawMatchesFlags::DEFAULT);
+	drawKeypoints(img_2, keypoints_2, img_keypoints_2, Scalar::all(-1),
+			DrawMatchesFlags::DEFAULT);
+	// return
+	blobpoint1 = keypoints_1;
+	blobpoint2 = keypoints_2;
 	return 0;
 }
 
