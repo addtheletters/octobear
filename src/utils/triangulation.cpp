@@ -9,11 +9,24 @@ using namespace cv;
 using namespace std;
 
 vector<KeyPoint> pointything1, pointything2;
+Mat triPoints;
 
 int triangulateTwoPoints(int argc, char** argv){
 	featuredetect(argc, argv, pointything1, pointything2, false);
 
-	cout << "The x place thing is: \n" <<	pointything1.size() << endl;
+	cout << "The x place thing is: \n" <<	pointything1[0].pt << pointything2[0].pt << endl;
+
+	Mat img_1 = imread(argv[1], CV_LOAD_IMAGE_GRAYSCALE);
+	Mat img_2 = imread(argv[2], CV_LOAD_IMAGE_GRAYSCALE);
+
+	Mat fakeProj(2,2, CV_32F,1);
+
+	//CvMat cvProj = fakeProj;
+
+
+	cout << "row == " << fakeProj.rows << endl;
+
+	triangulatePoints(fakeProj, fakeProj, pointything1, pointything2, triPoints);
 
 
 	return 0;
