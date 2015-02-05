@@ -12,12 +12,19 @@ vector<KeyPoint> pointything1, pointything2;
 Mat triPoints;
 
 int triangulateTwoPoints(int argc, char** argv){
-	featuredetect(argc, argv, pointything1, pointything2, false);
 
-	cout << "The x place thing is: \n" <<	pointything1[0].pt << pointything2[0].pt << endl;
+	if (argc != 3) {
+		//errar
+		return -1;
+	}
 
 	Mat img_1 = imread(argv[1], CV_LOAD_IMAGE_GRAYSCALE);
 	Mat img_2 = imread(argv[2], CV_LOAD_IMAGE_GRAYSCALE);
+
+	featuredetect_essential(img_1, img_2, pointything1, pointything2, false);
+
+	cout << "The x place thing is: \n" <<	pointything1[0].pt << pointything2[0].pt << endl;
+
 
 	Mat fakeProj(2,2, CV_32F,1);
 
