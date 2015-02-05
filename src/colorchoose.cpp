@@ -36,7 +36,14 @@ int drawcolor[] = {0, 0, 255};
 int ASCII_CODE_ESCAPE = 27;
 int ASCII_CODE_a_KEY = 97;
 
-
+struct HSVThreshVals{
+	int LowH;
+	int HighH;
+	int LowS;
+	int HighS;
+	int LowV;
+	int HighV;
+};
 
 VideoCapture openCamera(int num) {
 	VideoCapture cam(num); //capture the video from webcam
@@ -53,18 +60,17 @@ void createWindow(string window_name) {
 	namedWindow(window_name, CV_WINDOW_AUTOSIZE); //create a window called "Control"
 }
 
-void addHSVThresholdBars(string window_name, int* iLowH, int* iHighH,
-		int* iLowS, int* iHighS, int* iLowV, int* iHighV) {
+void addHSVThresholdBars(string window_name, HSVThreshVals* tvs) {
 
 	//Create trackbars in "Control" window
-	createTrackbar("LowH", window_name, iLowH, 179); //Hue (0 - 179)
-	createTrackbar("HighH", window_name, iHighH, 179);
+	createTrackbar("LowH", window_name, &(tvs->LowH), 179); //Hue (0 - 179)
+	createTrackbar("HighH", window_name, &(tvs->HighH), 179);
 
-	createTrackbar("LowS", window_name, iLowS, 255); //Saturation (0 - 255)
-	createTrackbar("HighS", window_name, iHighS, 255);
+	createTrackbar("LowS", window_name, &(tvs->LowS), 255); //Saturation (0 - 255)
+	createTrackbar("HighS", window_name, &(tvs->HighS), 255);
 
-	createTrackbar("LowV", window_name, iLowV, 255); //Value (0 - 255)
-	createTrackbar("HighV", window_name, iHighV, 255);
+	createTrackbar("LowV", window_name, &(tvs->LowV), 255); //Value (0 - 255)
+	createTrackbar("HighV", window_name, &(tvs->HighV), 255);
 
 }
 
