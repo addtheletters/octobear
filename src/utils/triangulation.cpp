@@ -23,18 +23,37 @@ int triangulateTwoPoints(int argc, char** argv){
 
 	featuredetect_essential(img_1, img_2, pointything1, pointything2, false);
 
-	cout << "The x place thing is: \n" <<	pointything1[0].pt << pointything2[0].pt << endl;
+	cout << "The x place thing is: " <<	pointything1[0].pt << pointything2[0].pt << endl;
+
+	cout <<typeid(pointything1[0].pt.x).name() << endl;
+
+	Mat fakeProj(3,4, CV_32F ,1);
 
 
-	Mat fakeProj(2,2, CV_32F,1);
 
 	//CvMat cvProj = fakeProj;
 
+	Mat points1(2,pointything1.size(),CV_32F);
 
-	cout << "row == " << fakeProj.rows << endl;
+	Mat points2(2,pointything1.size(),CV_32F);
 
-	triangulatePoints(fakeProj, fakeProj, pointything1, pointything2, triPoints);
+	for (int i =0; i < pointything1.size(); i++){
+		points1.at<float>(0,i)=pointything1[i].pt.x;
+		points1.at<float>(1,i)=pointything1[i].pt.y;
+	}
 
+	for (int i =0; i < pointything2.size(); i++){
+			points2.at<float>(0,i)=pointything2[i].pt.x;
+			points2.at<float>(1,i)=pointything2[i].pt.y;
+		}
+
+
+
+	cout << points1 << endl;
+
+	triangulatePoints(fakeProj, fakeProj, points1, points2, triPoints);
+
+	cout << triPoints<<endl;
 
 	return 0;
 }
