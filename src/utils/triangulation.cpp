@@ -9,7 +9,7 @@ using namespace cv;
 using namespace std;
 
 vector<KeyPoint> pointything1, pointything2;
-Mat triPoints;
+
 
 int triangulateTwoPoints(int argc, char** argv){
 
@@ -27,11 +27,13 @@ int triangulateTwoPoints(int argc, char** argv){
 
 	cout <<typeid(pointything1[0].pt.x).name() << endl;
 
-	Mat fakeProj(3,4, CV_32F ,0) = [ 6.5746697810243404e+002, 0., 3.1950000000000000e+002,
-	                                 0.,6.5746697810243404e+002, 2.3950000000000000e+002,
-	                                 0., 0., 1.,
-	                                 0.,0.,0.];
+	float projMat[3][4] = { 6.5746697810243404e+002, 0., 3.1950000000000000e+002,0.,
+		                                 0.,6.5746697810243404e+002, 2.3950000000000000e+002,0.,
+		                                 0., 0., 1.,0.
+		                                 };
 
+	Mat fakeProj = Mat(3,4, CV_32F ,projMat);
+	fakeProj.convertTo(fakeProj, CV_64F);
 
 
 	//CvMat cvProj = fakeProj;
@@ -51,8 +53,12 @@ int triangulateTwoPoints(int argc, char** argv){
 		}
 
 
+	points1.convertTo(points1, CV_64F);
+	points2.convertTo(points2, CV_64F);
 
 	cout << points1 << endl;
+
+	Mat triPoints = Mat(4,pointything1.size(), CV_64F);
 
 	triangulatePoints(fakeProj, fakeProj, points1, points2, triPoints);
 
