@@ -27,7 +27,10 @@ int triangulateTwoPoints(int argc, char** argv){
 
 	cout <<typeid(pointything1[0].pt.x).name() << endl;
 
-	Mat fakeProj(3,4, CV_32F ,1);
+	Mat fakeProj(3,4, CV_32F ,0) = [ 6.5746697810243404e+002, 0., 3.1950000000000000e+002,
+	                                 0.,6.5746697810243404e+002, 2.3950000000000000e+002,
+	                                 0., 0., 1.,
+	                                 0.,0.,0.];
 
 
 
