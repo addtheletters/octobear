@@ -13,6 +13,16 @@
 using namespace cv;
 using namespace std;
 
+struct HSVThreshVals{
+	int LowH;
+	int HighH;
+	int LowS;
+	int HighS;
+	int LowV;
+	int HighV;
+};
+
+
 
 //everyone loves global variables
 //*cough*
@@ -21,6 +31,7 @@ Mat imgOriginal;
 Mat imgHSV;
 Mat imgReflected;
 Mat imgHSVReflected;
+
 
 int iLowH = 38;
 int iHighH = 75;
@@ -36,14 +47,8 @@ int drawcolor[] = {0, 0, 255};
 int ASCII_CODE_ESCAPE = 27;
 int ASCII_CODE_a_KEY = 97;
 
-struct HSVThreshVals{
-	int LowH;
-	int HighH;
-	int LowS;
-	int HighS;
-	int LowV;
-	int HighV;
-};
+HSVThreshVals iThreshVals;
+
 
 VideoCapture openCamera(int num) {
 	VideoCapture cam(num); //capture the video from webcam
@@ -115,29 +120,31 @@ int ensureCapped(int val, int cap) {
 	return val;
 }
 
-void getThreshold(int h, int s, int v, int retthresh[]) {
+void getThreshold(int h, int s, int v, HSVThreshVals* retthresh) {
 	//these will need lots of tweaking
 	//especially saturation and value
 	//probably more arguments too.
-
-	retthresh[0] = ensurePositive(h - 20);
-	retthresh[1] = ensureCapped(h + 20, 179);
-	retthresh[2] = ensurePositive(s - 30);
-	retthresh[3] = ensureCapped(s + 80, 255);
-	retthresh[4] = ensurePositive(v - 50);
-	retthresh[5] = ensureCapped(v + 80, 255);
+	retthresh->LowH = ensurePositive(h - 20);
+	retthresh->HighH = ensureCapped(h + 20, 179);
+	retthresh->LowS = ensurePositive(s - 30);
+	retthresh->HighS = ensureCapped(s + 80, 255);
+	retthresh->LowV = ensurePositive(v - 50);
+	retthresh->HighV = ensureCapped(v + 80, 255);
 	//return retthresh;
 }
 
-void setThreshold(int threshvals[]){
-	iLowH = threshvals[0];
-	iHighH = threshvals[1];
+void setThreshold(HSVThreshVals threshvals){
+	iThreshVals = threshvals;
+	/*
+	iThreshVals.LowH = threshvals[0];
+	iThreshVals.HighH = threshvals[1];
 
-	iLowS = threshvals[2];
-	iHighS = threshvals[3];
+	iThreshVals.LowS= threshvals[2];
+	iThreshVals.HighH= threshvals[3];
 
-	iLowV = threshvals[4];
-	iHighV = threshvals[5];
+	iThreshVals.LowV= threshvals[4];
+	iThreshVals.HighV= threshvals[5];
+	*/
 }
 
 void onMouse(int event, int x, int y, int flags, void* usrdata) {
@@ -165,8 +172,8 @@ void onMouse(int event, int x, int y, int flags, void* usrdata) {
 	drawcolor[1] = (int)bgrPixel.val[1];
 	drawcolor[2] = (int)bgrPixel.val[2];
 
-	int threshvals[6];
-	getThreshold((int)hsvPixel.val[0], (int)hsvPixel.val[1], (int)hsvPixel.val[2], threshvals);
+	HSVThreshVals threshvals;
+	getThreshold((int)hsvPixel.val[0], (int)hsvPixel.val[1], (int)hsvPixel.val[2], &threshvals);
 
 
 	printf("Setting threshold bounds H(%d,%d) S(%d,%d) V(%d,%d).\n",
@@ -189,8 +196,7 @@ int colorchoose(int argc, char** argv) {
 	createWindow("Reflected");
 	setMouseCallback("Reflected", onMouse, 0);
 
-	addHSVThresholdBars("Ctrl", &iLowH, &iHighH, &iLowS, &iHighS, &iLowV,
-			&iHighV);
+	addHSVThresholdBars("Ctrl", &iThreshVals);
 
 	int iLastX = -1;
 	int iLastY = -1;
