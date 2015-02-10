@@ -32,7 +32,7 @@ Mat imgHSV;
 Mat imgReflected;
 Mat imgHSVReflected;
 
-
+/*
 int iLowH = 38;
 int iHighH = 75;
 
@@ -41,7 +41,7 @@ int iHighS = 255;
 
 int iLowV = 50;
 int iHighV = 255;
-
+*/
 int drawcolor[] = {0, 0, 255};
 
 int ASCII_CODE_ESCAPE = 27;
@@ -177,12 +177,12 @@ void onMouse(int event, int x, int y, int flags, void* usrdata) {
 
 
 	printf("Setting threshold bounds H(%d,%d) S(%d,%d) V(%d,%d).\n",
-			threshvals[0],
-			threshvals[1],
-			threshvals[2],
-			threshvals[3],
-			threshvals[4],
-			threshvals[5]);
+			threshvals.LowH,
+			threshvals.HighH,
+			threshvals.LowS,
+			threshvals.HighS,
+			threshvals.LowV,
+			threshvals.HighV);
 	setThreshold(threshvals);
 	//printfs alone were not giving output until the next cout was reached
 	cout << "force out?" << endl;
@@ -214,8 +214,8 @@ int colorchoose(int argc, char** argv) {
 		cvtColor(imgOriginal, imgHSV, COLOR_BGR2HSV); //Convert the captured frame from BGR to HSV
 
 		Mat imgThresholded;
-		inRange(imgHSV, Scalar(iLowH, iLowS, iLowV),
-				Scalar(iHighH, iHighS, iHighV), imgThresholded); //Threshold the image
+		inRange(imgHSV, Scalar(iThreshVals.LowH, iThreshVals.LowS, iThreshVals.LowV),
+				Scalar(iThreshVals.HighH, iThreshVals.HighS, iThreshVals.HighV), imgThresholded); //Threshold the image
 
 		morph(&imgThresholded);
 
