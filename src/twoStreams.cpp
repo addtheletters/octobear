@@ -12,8 +12,6 @@ using namespace cv;
 using namespace std;
 
 Mat threshold(Mat imgOriginal, InputArray LowS,InputArray HighS) {
-
-
         Mat imgHSV;
 
 		cvtColor(imgOriginal, imgHSV, COLOR_BGR2HSV); //Convert the captured frame from BGR to HSV

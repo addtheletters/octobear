@@ -8,7 +8,8 @@
 #ifndef BEARHEAD_H_
 #define BEARHEAD_H_
 
-#include "opencv/cv.h"
+#include <opencv/cv.h>
+#include <opencv2/highgui/highgui.hpp>
 
 
 int colorchoose(int argc, char** argv);
@@ -29,5 +30,14 @@ int triangulateTwoPoints(int argc, char** argv);
 int sample_SBM( int argc, char** argv );
 int sample_calibration(int argc, char* argv[]);
 int sample_stereo_calibration(int argc, char** argv);
+
+cv::VideoCapture openCamera(int num);
+void createWindow(std::string window_name);
+cv::Mat getBlankFromCam(cv::VideoCapture cam) ;
+bool readFrame(cv::VideoCapture cam, cv::Mat* frame);
+
+int ensurePositive(int val);
+int ensureCapped(int val, int cap);
+
 
 #endif /* BEARHEAD_H_ */

@@ -9,6 +9,7 @@
 #include "opencv2/imgproc/imgproc.hpp"
 #include <string>
 #include <stdio.h>
+#include "bearhead.h"
 
 using namespace cv;
 using namespace std;
@@ -50,20 +51,6 @@ int ASCII_CODE_a_KEY = 97;
 HSVThreshVals iThreshVals;
 
 
-VideoCapture openCamera(int num) {
-	VideoCapture cam(num); //capture the video from webcam
-
-	if (!cam.isOpened())  // if not success, exit program
-	{
-		cout << "Cannot open the web cam" << endl;
-	}
-
-	return cam;
-}
-
-void createWindow(string window_name) {
-	namedWindow(window_name, CV_WINDOW_AUTOSIZE); //create a window called "Control"
-}
 
 void addHSVThresholdBars(string window_name, HSVThreshVals* tvs) {
 
@@ -79,23 +66,7 @@ void addHSVThresholdBars(string window_name, HSVThreshVals* tvs) {
 
 }
 
-Mat getBlankFromCam(VideoCapture cam) {
-	//Capture a temporary image from the camera
-	Mat imgTmp;
-	cam.read(imgTmp);
-	Mat blank = Mat::zeros(imgTmp.size(), CV_8UC3); //zeroed matrix of same size
-	return blank;
-}
-
-bool readFrame(VideoCapture cam, Mat* frame) {
-	bool success = cam.read(*frame);
-
-	if (!success)
-		cout << "Cannot read a frame from video stream" << endl;
-	return success;
-}
-
-void morph(Mat* img) {
+static void morph(Mat* img) {
 	//morphological opening (removes small objects from the foreground)
 	erode(*img, *img, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
 	dilate(*img, *img, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
@@ -105,22 +76,7 @@ void morph(Mat* img) {
 	erode(*img, *img, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
 }
 
-
-int ensurePositive(int val) {
-	if (val < 0) {
-		return 0;
-	}
-	return val;
-}
-
-int ensureCapped(int val, int cap) {
-	if (val > cap) {
-		return cap;
-	}
-	return val;
-}
-
-void getThreshold(int h, int s, int v, HSVThreshVals* retthresh) {
+static void getPixelThreshold(int h, int s, int v, HSVThreshVals* retthresh) {
 	//these will need lots of tweaking
 	//especially saturation and value
 	//probably more arguments too.
@@ -147,6 +103,15 @@ void setThreshold(HSVThreshVals threshvals){
 	*/
 }
 
+static HSVThreshVals getHSVThreshold(Mat hsvImg, int x, int y){
+	Vec3b hsvPixel = hsvImg.at<Vec3b>(y, x);
+	printf("HSV color is [%d, %d, %d]\n", hsvPixel.val[0], hsvPixel.val[1],
+			hsvPixel.val[2]);
+	HSVThreshVals threshvals;
+	getPixelThreshold((int)hsvPixel.val[0], (int)hsvPixel.val[1], (int)hsvPixel.val[2], &threshvals);
+	return threshvals;
+}
+
 void onMouse(int event, int x, int y, int flags, void* usrdata) {
 	//cout << "NOOO" << endl;
 
@@ -161,20 +126,22 @@ void onMouse(int event, int x, int y, int flags, void* usrdata) {
 	//		<< bgrPixel.val[2] << "]" << endl;
 	printf("BGR color is [%d, %d, %d]\n", bgrPixel.val[0], bgrPixel.val[1],
 			bgrPixel.val[2]);
-	cv::flip(imgHSV, imgHSVReflected, 1);
-	Vec3b hsvPixel = imgHSVReflected.at<Vec3b>(y, x);
-	//cout << "HSV color is [" << hsvPixel.val[0] << "," << hsvPixel.val[1] << ","
-	//		<< hsvPixel.val[2] << "]" << endl;
-	printf("HSV color is [%d, %d, %d]\n", hsvPixel.val[0], hsvPixel.val[1],
-			hsvPixel.val[2]);
 
 	drawcolor[0] = (int)bgrPixel.val[0];
 	drawcolor[1] = (int)bgrPixel.val[1];
 	drawcolor[2] = (int)bgrPixel.val[2];
 
-	HSVThreshVals threshvals;
-	getThreshold((int)hsvPixel.val[0], (int)hsvPixel.val[1], (int)hsvPixel.val[2], &threshvals);
+	cv::flip(imgHSV, imgHSVReflected, 1);
+	HSVThreshVals threshvals = getHSVThreshold(imgHSVReflected, x, y);
+	//cout << "HSV color is [" << hsvPixel.val[0] << "," << hsvPixel.val[1] << ","
+	//		<< hsvPixel.val[2] << "]" << endl;
+	/*
+	printf("HSV color is [%d, %d, %d]\n", hsvPixel.val[0], hsvPixel.val[1],
+			hsvPixel.val[2]);
 
+	HSVThreshVals threshvals;
+	getPixelThreshold((int)hsvPixel.val[0], (int)hsvPixel.val[1], (int)hsvPixel.val[2], &threshvals);
+	*/
 
 	printf("Setting threshold bounds H(%d,%d) S(%d,%d) V(%d,%d).\n",
 			threshvals.LowH,
@@ -187,6 +154,13 @@ void onMouse(int event, int x, int y, int flags, void* usrdata) {
 	//printfs alone were not giving output until the next cout was reached
 	cout << "force out?" << endl;
 }
+
+
+static void threshold(Mat img, HSVThreshVals threshVals, Mat& out){
+	inRange(img, Scalar(threshVals.LowH, threshVals.LowS, threshVals.LowV),
+					Scalar(threshVals.HighH, threshVals.HighS, threshVals.HighV), out);
+}
+
 
 int colorchoose(int argc, char** argv) {
 
@@ -214,9 +188,7 @@ int colorchoose(int argc, char** argv) {
 		cvtColor(imgOriginal, imgHSV, COLOR_BGR2HSV); //Convert the captured frame from BGR to HSV
 
 		Mat imgThresholded;
-		inRange(imgHSV, Scalar(iThreshVals.LowH, iThreshVals.LowS, iThreshVals.LowV),
-				Scalar(iThreshVals.HighH, iThreshVals.HighS, iThreshVals.HighV), imgThresholded); //Threshold the image
-
+		threshold(imgHSV, iThreshVals, imgThresholded);
 		morph(&imgThresholded);
 
 		//Calculate the moments of the thresholded image
