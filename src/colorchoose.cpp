@@ -46,7 +46,7 @@ int iHighV = 255;
 int drawcolor[] = {0, 0, 255};
 
 int ASCII_CODE_ESCAPE = 27;
-int ASCII_CODE_a_KEY = 97;
+int ASCII_CODE_A_KEY = 97;
 
 HSVThreshVals iThreshVals;
 
@@ -219,20 +219,32 @@ int colorchoose(int argc, char** argv) {
 		cv::flip(imgThresholded, imgThresholdedReflected, 1);
 		imshow("Thresholded + Reflected Image", imgThresholdedReflected); //show the thresholded image
 		//imgOriginal = imgOriginal / 3;
+
+		//vector<KeyPoint> pointything1;
+        //cv::flip(imgOriginal, imgReflected, 1);
+		//featuredetect_david(imgReflected, pointything1, false);
+        //cout << "The x place thing is: " <<	pointything1[0].pt << pointything2[0].pt << endl;
+
 		imgOriginal = imgOriginal + imgLines;
 		//imshow("Original", imgOriginal); //show the original image
 
 		cv::flip(imgOriginal, imgReflected, 1);
 		imshow("Reflected", imgReflected); //show the reflected image
+
 		int keypress = waitKey(1);
 		if ( keypress == ASCII_CODE_ESCAPE ) //wait for 'esc' key press for 5ms. If 'esc' key is pressed, break loop
 		{
 			cout << "esc key is pressed by user, quitting." << endl;
 			break;
 		}
-		else if( keypress == ASCII_CODE_a_KEY ){
+		else if( keypress == ASCII_CODE_A_KEY ){
 			cout << "a key is pressed by user, clearing tracklines." << endl;
 			imgLines = getBlankFromCam(cap);
+		}
+		else if( keypress == 98) { //b
+            cout << "b key is pressed by user, generating blobs for thresholded image" << endl;
+            vector<KeyPoint> pointything2;
+            featuredetect_david(imgThresholdedReflected, pointything2, false);
 		}
 	}
 

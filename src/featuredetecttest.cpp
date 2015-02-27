@@ -86,6 +86,72 @@ int featuredetect(int argc, char** argv, vector<KeyPoint>& blobpoint1,
 	return 0;
 }
 
+int featuredetect_david(Mat img_1, vector<KeyPoint>& blobpoint1, bool inverse = false) {
+
+
+
+	if (inverse) {
+		bitwise_not(img_1, img_1);
+		cout << "inverting grayscale image" << endl;
+	}
+	if (!img_1.data) {
+		std::cout << " --(!) Error reading image " << std::endl;
+		return -1;
+	}
+
+	//-- Step 1: Detect the keypoints
+	// set up the parameters (check the defaults in opencv's code in blobdetector.cpp)
+	cv::SimpleBlobDetector::Params params;
+	params.minDistBetweenBlobs = 50.0f;
+	params.filterByInertia = false;
+	params.filterByConvexity = false;
+	params.filterByColor = false;
+	params.filterByCircularity = false;
+	params.filterByArea = true;
+	params.minArea = 20.0f;
+	params.maxArea = 5000.0f;
+
+	// ... any other params you don't want default value
+
+	// set up and create the detector using the parameters
+	Ptr<FeatureDetector> blob_detector = new SimpleBlobDetector(params);
+	blob_detector->create("SimpleBlob");
+
+	// detect!
+
+	vector<KeyPoint> keypoints_1;
+
+	cout << "good" << endl;
+
+	blob_detector->detect(img_1, keypoints_1);
+	//cout << "KPs 1:\n" << Mat(keypoints_1) << endl;
+
+	//cout << "KPs 2:\n" << Mat(keypoints_2) << endl;
+
+	//-- Draw keypoints
+	Mat img_keypoints_1;
+
+	drawKeypoints(img_1, keypoints_1, img_keypoints_1, Scalar::all(-1),
+			DrawMatchesFlags::DEFAULT);
+	cout << "good?" << endl;
+
+	//-- Show detected (drawn) keypoints
+	imshow("Keypoints 1", img_keypoints_1);
+	cout << "good" << endl;
+
+	blobpoint1 = keypoints_1;
+
+	cout << "The featuredetect is done!\n" << endl;
+	int keypress = waitKey(1);
+	if( keypress == 32 ){
+			cout << "space is pressed, pause until next keypress" << endl;
+			waitKey(0);
+    }
+
+	return 0;
+}
+
+
 /*
  * img_1 and 2 grayscale image
  *
@@ -128,6 +194,7 @@ int featuredetect_essential(Mat img_1, Mat img_2, vector<KeyPoint>& blobpoint1,
 	drawKeypoints(img_2, keypoints_2, img_keypoints_2, Scalar::all(-1),
 			DrawMatchesFlags::DEFAULT);
 	// return
+	//cout << "Poop" << keypoints_1[0].pt << keypoints_2[0].pt << endl;
 	blobpoint1 = keypoints_1;
 	blobpoint2 = keypoints_2;
 	return 0;

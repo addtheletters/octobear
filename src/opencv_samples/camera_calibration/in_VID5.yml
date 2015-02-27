@@ -1,0 +1,18 @@
+opencv_storage: 
+ Settings: 
+  BoardSize_Width: 8
+  BoardSize_Height: 9
+  Square_Size: 25
+  Calibrate_Pattern: "\"CIRCLES_GRID\""
+  Input: "\"0\""
+  Input_FlipAroundHorizontalAxis: 0
+  Input_Delay: 100
+  Calibrate_NrOfFrameToUse: 25
+  Calibrate_FixAspectRatio: " 1 "
+  Calibrate_AssumeZeroTangentialDistortion: 1
+  Calibrate_FixPrincipalPointAtTheCenter: " 1 "
+  Write_outputFileName: "\"out_camera_data.xml\""
+  Write_DetectedFeaturePoints: 1
+  Write_extrinsicParameters: 1
+  Show_UndistortedImage: 1
+  Show_UndistortedImage: 1
