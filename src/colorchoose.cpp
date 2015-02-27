@@ -46,7 +46,7 @@ int iHighV = 255;
 int drawcolor[] = {0, 0, 255};
 
 int ASCII_CODE_ESCAPE = 27;
-int ASCII_CODE_a_KEY = 97;
+int ASCII_CODE_A_KEY = 97;
 
 HSVThreshVals iThreshVals;
 
@@ -230,7 +230,7 @@ int colorchoose(int argc, char** argv) {
 			cout << "esc key is pressed by user, quitting." << endl;
 			break;
 		}
-		else if( keypress == ASCII_CODE_a_KEY ){
+		else if( keypress == ASCII_CODE_A_KEY ){
 			cout << "a key is pressed by user, clearing tracklines." << endl;
 			imgLines = getBlankFromCam(cap);
 		}
