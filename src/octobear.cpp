@@ -27,6 +27,7 @@ int main( int argc, char** argv ){
 	//featuredetect(argc, argv);
 	//unworked_triag(argc, argv);
 
+	twocams(argc, argv, "yes");
 	triangulateTwoPoints(argc, argv);
 
 	//unworked_triag(argc, argv);

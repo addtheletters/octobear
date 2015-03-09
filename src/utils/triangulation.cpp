@@ -27,13 +27,17 @@ int triangulateTwoPoints(int argc, char** argv){
 
 	cout <<typeid(pointything1[0].pt.x).name() << endl;
 
-	float projMat[3][4] = { 6.5746697810243404e+002, 0., 3.1950000000000000e+002,0.,
+	/*float projMat[3][4] = { 6.5746697810243404e+002, 0., 3.1950000000000000e+002,0.,
 		                                 0.,6.5746697810243404e+002, 2.3950000000000000e+002,0.,
 		                                 0., 0., 1.,0.
 		                                 };
-
+*/
+	float projMat[3][4] = { 0.878, -0.01 ,  0.479, -1.995,
+			 0.01 ,  1.   ,  0.002, -0.226,
+			-0.479,  0.002,  0.878,  0.615,
+			 };
 	Mat fakeProj = Mat(3,4, CV_32F ,projMat);
-	fakeProj.convertTo(fakeProj, CV_64F);
+	fakeProj.convertTo(fakeProj, CV_64FC3);
 
 
 	//CvMat cvProj = fakeProj;
@@ -53,12 +57,15 @@ int triangulateTwoPoints(int argc, char** argv){
 		}
 
 
-	points1.convertTo(points1, CV_64F);
-	points2.convertTo(points2, CV_64F);
+	points1.convertTo(points1, CV_64FC2);
+	points2.convertTo(points2, CV_64FC2);
 
 	cout << points1 << endl;
 
-	Mat triPoints = Mat(4,pointything1.size(), CV_64F);
+
+	cout<< fakeProj <<endl;
+
+	Mat triPoints = Mat(1,pointything1.size(),CV_64FC4,0);
 
 	triangulatePoints(fakeProj, fakeProj, points1, points2, triPoints);
 
