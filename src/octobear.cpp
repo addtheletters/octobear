@@ -20,6 +20,8 @@ int main( int argc, char** argv ){
 	//loadImages(argc, argv, &img1, &img2);
 	//kalmanrob(argc, argv);
 
+	colorchoose(argc, argv);
+
 	//sample_SBM(argc, argv);
 	//sample_calibration(argc, argv);
 	//string args[2] = {"sc1.jpg", "sc2.jpg"};
@@ -27,8 +29,10 @@ int main( int argc, char** argv ){
 	//featuredetect(argc, argv);
 	//unworked_triag(argc, argv);
 
+
 	twocams(argc, argv, "yes");
 	triangulateTwoPoints(argc, argv);
+
 
 	//unworked_triag(argc, argv);
 

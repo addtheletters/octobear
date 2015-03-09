@@ -9,32 +9,10 @@
 #include "opencv2/imgproc/imgproc.hpp"
 #include <string>
 #include <stdio.h>
+#include "bearhead.h"
 
 using namespace cv;
 using namespace std;
-
-
-//everyone loves global variables
-//*cough*
-
-Mat imgOriginal;
-Mat imgHSV;
-Mat imgReflected;
-Mat imgHSVReflected;
-
-int iLowH = 38;
-int iHighH = 75;
-
-int iLowS = 70;
-int iHighS = 255;
-
-int iLowV = 50;
-int iHighV = 255;
-
-int drawcolor[] = {0, 0, 255};
-
-int ASCII_CODE_ESCAPE = 27;
-int ASCII_CODE_a_KEY = 97;
 
 struct HSVThreshVals{
 	int LowH;
@@ -45,20 +23,34 @@ struct HSVThreshVals{
 	int HighV;
 };
 
-VideoCapture openCamera(int num) {
-	VideoCapture cam(num); //capture the video from webcam
 
-	if (!cam.isOpened())  // if not success, exit program
-	{
-		cout << "Cannot open the web cam" << endl;
-	}
 
-	return cam;
-}
+//everyone loves global variables
+//*cough*
 
-void createWindow(string window_name) {
-	namedWindow(window_name, CV_WINDOW_AUTOSIZE); //create a window called "Control"
-}
+Mat imgOriginal;
+Mat imgHSV;
+Mat imgReflected;
+Mat imgHSVReflected;
+
+/*
+int iLowH = 38;
+int iHighH = 75;
+
+int iLowS = 70;
+int iHighS = 255;
+
+int iLowV = 50;
+int iHighV = 255;
+*/
+int drawcolor[] = {0, 0, 255};
+
+int ASCII_CODE_ESCAPE = 27;
+int ASCII_CODE_A_KEY = 97;
+
+HSVThreshVals iThreshVals;
+
+
 
 void addHSVThresholdBars(string window_name, HSVThreshVals* tvs) {
 
@@ -74,23 +66,7 @@ void addHSVThresholdBars(string window_name, HSVThreshVals* tvs) {
 
 }
 
-Mat getBlankFromCam(VideoCapture cam) {
-	//Capture a temporary image from the camera
-	Mat imgTmp;
-	cam.read(imgTmp);
-	Mat blank = Mat::zeros(imgTmp.size(), CV_8UC3); //zeroed matrix of same size
-	return blank;
-}
-
-bool readFrame(VideoCapture cam, Mat* frame) {
-	bool success = cam.read(*frame);
-
-	if (!success)
-		cout << "Cannot read a frame from video stream" << endl;
-	return success;
-}
-
-void morph(Mat* img) {
+static void morph(Mat* img) {
 	//morphological opening (removes small objects from the foreground)
 	erode(*img, *img, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
 	dilate(*img, *img, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
@@ -100,44 +76,40 @@ void morph(Mat* img) {
 	erode(*img, *img, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
 }
 
-
-int ensurePositive(int val) {
-	if (val < 0) {
-		return 0;
-	}
-	return val;
-}
-
-int ensureCapped(int val, int cap) {
-	if (val > cap) {
-		return cap;
-	}
-	return val;
-}
-
-void getThreshold(int h, int s, int v, int retthresh[]) {
+static void getPixelThreshold(int h, int s, int v, HSVThreshVals* retthresh) {
 	//these will need lots of tweaking
 	//especially saturation and value
 	//probably more arguments too.
-
-	retthresh[0] = ensurePositive(h - 20);
-	retthresh[1] = ensureCapped(h + 20, 179);
-	retthresh[2] = ensurePositive(s - 30);
-	retthresh[3] = ensureCapped(s + 80, 255);
-	retthresh[4] = ensurePositive(v - 50);
-	retthresh[5] = ensureCapped(v + 80, 255);
+	retthresh->LowH = ensurePositive(h - 20);
+	retthresh->HighH = ensureCapped(h + 20, 179);
+	retthresh->LowS = ensurePositive(s - 30);
+	retthresh->HighS = ensureCapped(s + 80, 255);
+	retthresh->LowV = ensurePositive(v - 50);
+	retthresh->HighV = ensureCapped(v + 80, 255);
 	//return retthresh;
 }
 
-void setThreshold(int threshvals[]){
-	iLowH = threshvals[0];
-	iHighH = threshvals[1];
+void setThreshold(HSVThreshVals threshvals){
+	iThreshVals = threshvals;
+	/*
+	iThreshVals.LowH = threshvals[0];
+	iThreshVals.HighH = threshvals[1];
 
-	iLowS = threshvals[2];
-	iHighS = threshvals[3];
+	iThreshVals.LowS= threshvals[2];
+	iThreshVals.HighH= threshvals[3];
 
-	iLowV = threshvals[4];
-	iHighV = threshvals[5];
+	iThreshVals.LowV= threshvals[4];
+	iThreshVals.HighV= threshvals[5];
+	*/
+}
+
+static HSVThreshVals getHSVThreshold(Mat hsvImg, int x, int y){
+	Vec3b hsvPixel = hsvImg.at<Vec3b>(y, x);
+	printf("HSV color is [%d, %d, %d]\n", hsvPixel.val[0], hsvPixel.val[1],
+			hsvPixel.val[2]);
+	HSVThreshVals threshvals;
+	getPixelThreshold((int)hsvPixel.val[0], (int)hsvPixel.val[1], (int)hsvPixel.val[2], &threshvals);
+	return threshvals;
 }
 
 void onMouse(int event, int x, int y, int flags, void* usrdata) {
@@ -154,32 +126,41 @@ void onMouse(int event, int x, int y, int flags, void* usrdata) {
 	//		<< bgrPixel.val[2] << "]" << endl;
 	printf("BGR color is [%d, %d, %d]\n", bgrPixel.val[0], bgrPixel.val[1],
 			bgrPixel.val[2]);
-	cv::flip(imgHSV, imgHSVReflected, 1);
-	Vec3b hsvPixel = imgHSVReflected.at<Vec3b>(y, x);
-	//cout << "HSV color is [" << hsvPixel.val[0] << "," << hsvPixel.val[1] << ","
-	//		<< hsvPixel.val[2] << "]" << endl;
-	printf("HSV color is [%d, %d, %d]\n", hsvPixel.val[0], hsvPixel.val[1],
-			hsvPixel.val[2]);
 
 	drawcolor[0] = (int)bgrPixel.val[0];
 	drawcolor[1] = (int)bgrPixel.val[1];
 	drawcolor[2] = (int)bgrPixel.val[2];
 
-	int threshvals[6];
-	getThreshold((int)hsvPixel.val[0], (int)hsvPixel.val[1], (int)hsvPixel.val[2], threshvals);
+	cv::flip(imgHSV, imgHSVReflected, 1);
+	HSVThreshVals threshvals = getHSVThreshold(imgHSVReflected, x, y);
+	//cout << "HSV color is [" << hsvPixel.val[0] << "," << hsvPixel.val[1] << ","
+	//		<< hsvPixel.val[2] << "]" << endl;
+	/*
+	printf("HSV color is [%d, %d, %d]\n", hsvPixel.val[0], hsvPixel.val[1],
+			hsvPixel.val[2]);
 
+	HSVThreshVals threshvals;
+	getPixelThreshold((int)hsvPixel.val[0], (int)hsvPixel.val[1], (int)hsvPixel.val[2], &threshvals);
+	*/
 
 	printf("Setting threshold bounds H(%d,%d) S(%d,%d) V(%d,%d).\n",
-			threshvals[0],
-			threshvals[1],
-			threshvals[2],
-			threshvals[3],
-			threshvals[4],
-			threshvals[5]);
+			threshvals.LowH,
+			threshvals.HighH,
+			threshvals.LowS,
+			threshvals.HighS,
+			threshvals.LowV,
+			threshvals.HighV);
 	setThreshold(threshvals);
 	//printfs alone were not giving output until the next cout was reached
 	cout << "force out?" << endl;
 }
+
+
+static void threshold(Mat img, HSVThreshVals threshVals, Mat& out){
+	inRange(img, Scalar(threshVals.LowH, threshVals.LowS, threshVals.LowV),
+					Scalar(threshVals.HighH, threshVals.HighS, threshVals.HighV), out);
+}
+
 
 int colorchoose(int argc, char** argv) {
 
@@ -189,8 +170,7 @@ int colorchoose(int argc, char** argv) {
 	createWindow("Reflected");
 	setMouseCallback("Reflected", onMouse, 0);
 
-	addHSVThresholdBars("Ctrl", &iLowH, &iHighH, &iLowS, &iHighS, &iLowV,
-			&iHighV);
+	addHSVThresholdBars("Ctrl", &iThreshVals);
 
 	int iLastX = -1;
 	int iLastY = -1;
@@ -208,9 +188,7 @@ int colorchoose(int argc, char** argv) {
 		cvtColor(imgOriginal, imgHSV, COLOR_BGR2HSV); //Convert the captured frame from BGR to HSV
 
 		Mat imgThresholded;
-		inRange(imgHSV, Scalar(iLowH, iLowS, iLowV),
-				Scalar(iHighH, iHighS, iHighV), imgThresholded); //Threshold the image
-
+		threshold(imgHSV, iThreshVals, imgThresholded);
 		morph(&imgThresholded);
 
 		//Calculate the moments of the thresholded image
@@ -241,20 +219,32 @@ int colorchoose(int argc, char** argv) {
 		cv::flip(imgThresholded, imgThresholdedReflected, 1);
 		imshow("Thresholded + Reflected Image", imgThresholdedReflected); //show the thresholded image
 		//imgOriginal = imgOriginal / 3;
+
+		//vector<KeyPoint> pointything1;
+        //cv::flip(imgOriginal, imgReflected, 1);
+		//featuredetect_david(imgReflected, pointything1, false);
+        //cout << "The x place thing is: " <<	pointything1[0].pt << pointything2[0].pt << endl;
+
 		imgOriginal = imgOriginal + imgLines;
 		//imshow("Original", imgOriginal); //show the original image
 
 		cv::flip(imgOriginal, imgReflected, 1);
 		imshow("Reflected", imgReflected); //show the reflected image
+
 		int keypress = waitKey(1);
 		if ( keypress == ASCII_CODE_ESCAPE ) //wait for 'esc' key press for 5ms. If 'esc' key is pressed, break loop
 		{
 			cout << "esc key is pressed by user, quitting." << endl;
 			break;
 		}
-		else if( keypress == ASCII_CODE_a_KEY ){
+		else if( keypress == ASCII_CODE_A_KEY ){
 			cout << "a key is pressed by user, clearing tracklines." << endl;
 			imgLines = getBlankFromCam(cap);
+		}
+		else if( keypress == 98) { //b
+            cout << "b key is pressed by user, generating blobs for thresholded image" << endl;
+            vector<KeyPoint> pointything2;
+            featuredetect_david(imgThresholdedReflected, pointything2, false);
 		}
 	}
 
