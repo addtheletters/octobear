@@ -47,6 +47,7 @@ int drawcolor[] = {0, 0, 255};
 
 int ASCII_CODE_ESCAPE = 27;
 int ASCII_CODE_A_KEY = 97;
+int ASCII_CODE_B_KEY = 98;
 
 HSVThreshVals iThreshVals;
 
@@ -175,6 +176,8 @@ int colorchoose(int argc, char** argv) {
 	int iLastX = -1;
 	int iLastY = -1;
 
+	vector<KeyPoint> keypoints;
+
 	//Create a black image with the size as the camera output
 	//on which the red lines are drawn. Layered over original.
 	Mat imgLines = getBlankFromCam(cap);
@@ -231,6 +234,10 @@ int colorchoose(int argc, char** argv) {
 		cv::flip(imgOriginal, imgReflected, 1);
 		imshow("Reflected", imgReflected); //show the reflected image
 
+		if(keypoints.size() > 0){
+			//imshow();
+		}
+
 		int keypress = waitKey(1);
 		if ( keypress == ASCII_CODE_ESCAPE ) //wait for 'esc' key press for 5ms. If 'esc' key is pressed, break loop
 		{
@@ -241,10 +248,9 @@ int colorchoose(int argc, char** argv) {
 			cout << "a key is pressed by user, clearing tracklines." << endl;
 			imgLines = getBlankFromCam(cap);
 		}
-		else if( keypress == 98) { //b
+		else if( keypress == ASCII_CODE_B_KEY) { //b
             cout << "b key is pressed by user, generating blobs for thresholded image" << endl;
-            vector<KeyPoint> pointything2;
-            featuredetect_david(imgThresholdedReflected, pointything2, false);
+            featuredetect_david(imgThresholdedReflected, keypoints, false);
 		}
 	}
 

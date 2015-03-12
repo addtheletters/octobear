@@ -10,12 +10,13 @@
 
 #include <opencv/cv.h>
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/features2d/features2d.hpp>
 
 
 int colorchoose(int argc, char** argv);
 int featuredetect(int argc, char** argv, std::vector<cv::KeyPoint>& blobpoint1, std::vector<cv::KeyPoint>& blobpoint2, bool inverse = false);
-int featuredetect_essential(cv::Mat img_1, cv::Mat img_2, std::vector<cv::KeyPoint>& blobpoint1,
-		std::vector<cv::KeyPoint>& blobpoint2, bool inverse = false);
+int featuredetect_essential(cv::Mat img_1, cv::Mat img_2, std::vector<cv::KeyPoint>& blobpoint1, std::vector<cv::KeyPoint>& blobpoint2, bool inverse = false);
+void createBlobDetector(cv::FeatureDetector* blob_detector);
 int featuredetect_david(cv::Mat img_1, std::vector<cv::KeyPoint>& blobpoint1, bool inverse = false);
 
 int greendetect(int argc, char** argv);
