@@ -121,11 +121,11 @@ int featuredetect_david(Mat img, vector<KeyPoint>& blobpoint1, bool inverse = fa
 	// set up the parameters (check the defaults in opencv's code in blobdetector.cpp)
 	cv::SimpleBlobDetector::Params params;
 	params.minDistBetweenBlobs = 50.0f;
-	/*params.filterByInertia = false;
+	params.filterByInertia = false;
 	params.filterByConvexity = false;
 	params.filterByColor = false;
 	params.filterByCircularity = false;
-	*/
+
 	params.filterByArea = true;
 	params.minArea = 20.0f;
 	params.maxArea = 5000.0f;
@@ -143,13 +143,18 @@ int featuredetect_david(Mat img, vector<KeyPoint>& blobpoint1, bool inverse = fa
 
 	drawKeypoints(img, keypoints_1, img_keypoints_1, Scalar::all(-1),
 			DrawMatchesFlags::DEFAULT);
-	cout << "good?" << endl;
+	//cout << "good?" << endl;
 
 	//-- Show detected (drawn) keypoints
 	imshow("Keypoints 1", img_keypoints_1);
-	cout << "good" << endl;
-
+	//cout << "good" << endl;
 	blobpoint1 = keypoints_1;
+	int keypress = waitKey(1);
+	//X( THIS WAS HERE BECAUSE IT DOESN'T WORK WITHOUT A PAUSE
+    if( keypress == 32 ){
+            cout << "space is pressed, pause until next keypress" << endl;
+			waitKey(0);
+    }
 	return 0;
 }
 
