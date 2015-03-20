@@ -147,13 +147,16 @@ int featuredetect_david(Mat img, vector<KeyPoint>& blobpoint1, bool inverse = fa
 
 	//-- Show detected (drawn) keypoints
 	imshow("Keypoints 1", img_keypoints_1);
-	//cout << "good" << endl;
+	int nK = keypoints_1.size();
+	for(int i = 0; i < nK; i++) {
+        cout << keypoints_1[i].pt << endl;
+	}
 	blobpoint1 = keypoints_1;
 	int keypress = waitKey(1);
 	//X( THIS WAS HERE BECAUSE IT DOESN'T WORK WITHOUT A PAUSE
     if( keypress == 32 ){
-            cout << "space is pressed, pause until next keypress" << endl;
-			waitKey(0);
+        cout << "space is pressed, pause until next keypress" << endl;
+        waitKey(0);
     }
 	return 0;
 }
