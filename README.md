@@ -1,14 +1,5 @@
 octobear
 ========
 
-Eye see hand. Machine vision. Gesture recognition, eventually.
+Eye see hand. Machine vision. Gesture recognition, eventually. A project aiming to accurately track hand motions using a simple, affordable camera rig. 
 
-https://docs.google.com/document/d/1YtORAY8EdTyj7USjQnBCmhvzW1n55bvI78Osv6T_0DQ/edit
-
-Ben David Thomas
-Making things since never
-Until never
-Never making things?
-
-To make this program work:
-Just kidding
